@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMEGA MATHEMATICA</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff1a1a">
+
+<style>
+
+:root{
+    --accent:#ff1a1a;
+    --bg:#0f0f12;
+    --panel:#17171c;
+    --card:#1e1e25;
+    --border:#2a2a33;
+    --text:#e4e4ea;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Segoe UI}
+
+body{
+    display:flex;
+    height:100vh;
+    background:radial-gradient(circle at top,#181820,#0f0f12);
+    color:var(--text);
+}
+
+.sidebar{
+    width:260px;
+    background:var(--panel);
+    padding:25px;
+    border-right:1px solid var(--border);
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+    color:var(--accent);
+    margin-bottom:25px;
+}
+
+.nav-item{
+    padding:12px;
+    margin-bottom:6px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.nav-item:hover{background:var(--card);}
+
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+.topbar{
+    height:60px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+}
+
+.dashboard-btn{
+    background:var(--accent);
+    border:none;
+    padding:8px 16px;
+    color:white;
+    cursor:pointer;
+}
+
+.content{
+    flex:1;
+    padding:40px;
+    overflow:auto;
+}
+
+/* DASHBOARD */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:25px;
+    margin-top:30px;
+}
+
+.dash-card{
+    background:var(--card);
+    padding:25px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:.25s;
+    border:1px solid transparent;
+}
+
+.dash-card:hover{
+    border:1px solid var(--accent);
+    transform:translateY(-6px);
+}
+
+.dash-icon{font-size:34px;margin-bottom:15px;}
+.dash-title{font-size:18px;font-weight:600;margin-bottom:8px;}
+.dash-desc{font-size:13px;opacity:.6;}
+
+input{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    background:#111;
+    border:1px solid var(--border);
+    color:white;
+    font-size:16px;
+}
+
+button{
+    margin-top:10px;
+    padding:10px 14px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.calc-btn{background:var(--accent);color:white;}
+.voice-btn{background:#444;color:white;margin-left:5px;}
+
+.answer{
+    margin-top:20px;
+    padding:20px;
+    background:#111;
+    border-left:4px solid var(--accent);
+    font-size:20px;
+}
+
+canvas{
+    background:black;
+    border:2px solid var(--accent);
+    margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="logo">OMEGA MATHEMATICA</div>
+    <div class="nav-item" onclick="openModule('calculator')">Calculator</div>
+    <div class="nav-item" onclick="openModule('scientific')">Scientific</div>
+    <div class="nav-item" onclick="openModule('percentage')">Percentage</div>
+    <div class="nav-item" onclick="openModule('quadratic')">Quadratic Solver</div>
+    <div class="nav-item" onclick="openModule('circle')">Circle Area</div>
+    <div class="nav-item" onclick="openModule('prime')">Prime Checker</div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <div id="title">Dashboard</div>
+        <button class="dashboard-btn" onclick="renderDashboard()">Dashboard</button>
+    </div>
+    <div class="content" id="content"></div>
+</div>
+
+<script>
+
+/* ===== DASHBOARD ===== */
+
+function renderDashboard(){
+    document.getElementById("title").innerText="Dashboard";
+
+    document.getElementById("content").innerHTML=`
+        <h1 style="font-size:28px;">Control Center</h1>
+        <p style="opacity:.7;margin-top:6px;">Select a tool or launch the game.</p>
+
+        <div class="dashboard-grid">
+
+            <div class="dash-card" onclick="openModule('calculator')">
+                <div class="dash-icon">🧮</div>
+                <div class="dash-title">Calculator</div>
+                <div class="dash-desc">Basic arithmetic operations</div>
+            </div>
+
+            <div class="dash-card" onclick="openModule('scientific')">
+                <div class="dash-icon">📊</div>
+                <div class="dash-title">Scientific</div>
+                <div class="dash-desc">Advanced math functions</div>
+            </div>
+
+            <div class="dash-card" onclick="openModule('quadratic')">
+                <div class="dash-icon">📐</div>
+                <div class="dash-title">Quadratic Solver</div>
+                <div class="dash-desc">Solve ax² + bx + c</div>
+            </div>
+
+            <div class="dash-card" onclick="openModule('percentage')">
+                <div class="dash-icon">%</div>
+                <div class="dash-title">Percentage</div>
+                <div class="dash-desc">Convert ratios to percent</div>
+            </div>
+
+            <div class="dash-card" onclick="openModule('circle')">
+                <div class="dash-icon">⭕</div>
+                <div class="dash-title">Circle Area</div>
+                <div class="dash-desc">Compute π × r²</div>
+            </div>
+
+            <div class="dash-card" onclick="openModule('prime')">
+                <div class="dash-icon">🔎</div>
+                <div class="dash-title">Prime Checker</div>
+                <div class="dash-desc">Test if number is prime</div>
+            </div>
+
+        </div>
+
+        <hr style="margin:50px 0;opacity:.2;">
+
+        <h2>🎮 Infinite Dodger</h2>
+        <button class="calc-btn" onclick="startGame()">Start Game</button>
+        <div style="margin-top:10px;">Score: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+    `;
+}
+
+/* ===== SAFE MATH ===== */
+
+function safeEval(expr){
+    expr=expr.replace(/\^/g,"**")
+             .replace(/sqrt/gi,"Math.sqrt")
+             .replace(/sin/gi,"Math.sin")
+             .replace(/cos/gi,"Math.cos")
+             .replace(/tan/gi,"Math.tan");
+    if(!/^[0-9+\-*/().\s*Mathsqrtincostan]+$/.test(expr)) throw "Invalid";
+    return Function("return "+expr)();
+}
+
+/* ===== MICROPHONE ===== */
+
+function startVoiceInput(){
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+        alert("Speech recognition not supported. Use Chrome.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang="en-US";
+    recognition.start();
+
+    recognition.onresult=function(event){
+        document.getElementById("inputField").value =
+            event.results[0][0].transcript;
+    };
+
+    recognition.onerror=function(e){
+        alert("Microphone error: " + e.error);
+    };
+}
+
+/* ===== MODULES ===== */
+
+function openModule(id){
+    document.getElementById("title").innerText=id;
+
+    document.getElementById("content").innerHTML=`
+        <input id="inputField" placeholder="Enter values here">
+        <button class="calc-btn" onclick="compute('${id}')">Calculate</button>
+        <button class="voice-btn" onclick="startVoiceInput()">🎤</button>
+        <div class="answer" id="result">Waiting...</div>
+    `;
+
+    document.getElementById("inputField")
+        .addEventListener("keypress",e=>{
+            if(e.key==="Enter") compute(id);
+        });
+}
+
+/* ===== COMPUTE ===== */
+
+function compute(id){
+    const val=document.getElementById("inputField").value.trim();
+    const out=document.getElementById("result");
+
+    try{
+        let result="";
+
+        switch(id){
+
+            case "calculator":
+            case "scientific":
+                result=safeEval(val).toFixed(6);
+                break;
+
+            case "percentage":
+                let [a,b]=val.split(",").map(Number);
+                result=((a/b)*100).toFixed(2)+"%";
+                break;
+
+            case "quadratic":
+                let [A,B,C]=val.split(",").map(Number);
+                let d=B*B-4*A*C;
+                if(d<0){ result="No real solution"; }
+                else{
+                    let x1=(-B+Math.sqrt(d))/(2*A);
+                    let x2=(-B-Math.sqrt(d))/(2*A);
+                    result=`x₁=${x1.toFixed(4)}, x₂=${x2.toFixed(4)}`;
+                }
+                break;
+
+            case "circle":
+                let r=Number(val);
+                result=(Math.PI*r*r).toFixed(4);
+                break;
+
+            case "prime":
+                let n=parseInt(val);
+                if(n<2){ result="Not Prime"; break; }
+                result="Prime";
+                for(let i=2;i<=Math.sqrt(n);i++)
+                    if(n%i===0){ result="Not Prime"; break; }
+                break;
+        }
+
+        out.innerText=result;
+
+    }catch{
+        out.innerText="Invalid input.";
+    }
+}
+
+/* ===== GAME ===== */
+
+let gameActive=false;
+
+function startGame(){
+    if(gameActive) return;
+    gameActive=true;
+
+    const canvas=document.getElementById("gameCanvas");
+    const ctx=canvas.getContext("2d");
+    const scoreEl=document.getElementById("score");
+
+    let score=0;
+    let obstacles=[];
+    let speed=3;
+    const player={x:185,y:550,w:30,h:30,dx:0};
+
+    document.onkeydown=e=>{
+        if(e.key==="ArrowLeft") player.dx=-6;
+        if(e.key==="ArrowRight") player.dx=6;
+    };
+    document.onkeyup=()=>player.dx=0;
+
+    function loop(){
+        if(!gameActive) return;
+        ctx.clearRect(0,0,400,600);
+
+        player.x+=player.dx;
+        if(player.x<0) player.x=0;
+        if(player.x+player.w>400) player.x=400-player.w;
+
+        ctx.fillStyle="#00ff88";
+        ctx.fillRect(player.x,player.y,player.w,player.h);
+
+        if(Math.random()<0.02)
+            obstacles.push({x:Math.random()*350,y:-50});
+
+        obstacles.forEach((o,i)=>{
+            o.y+=speed;
+            ctx.fillStyle="#ff3333";
+            ctx.fillRect(o.x,o.y,50,50);
+
+            if(player.x<o.x+50 &&
+               player.x+player.w>o.x &&
+               player.y<o.y+50 &&
+               player.y+player.h>o.y){
+                gameActive=false;
+                ctx.fillStyle="#fff";
+                ctx.fillText("GAME OVER",120,300);
+            }
+
+            if(o.y>600){
+                obstacles.splice(i,1);
+                score++;
+                speed+=0.1;
+                scoreEl.innerText=score;
+            }
+        });
+
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+}
+
+renderDashboard();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(reg => console.log("Service Worker Registered"))
+      .catch(err => console.log("Service Worker Error:", err));
+  });
+}
+</script>
+
+</body>
+</html>
